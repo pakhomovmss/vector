@@ -11,10 +11,7 @@ def mk_rec(items, res, col1, col2):
     id_ = 1
 
     for val in items:
-        record = {}
-
-        record[col1] = id_
-        record[col2] = val
+        record = (id_, val)
 
         res.append(record)
         id_ += 1
@@ -45,17 +42,17 @@ def dishes():
             for item in root[r].find('Menu')[comp].findall('Dish'):
                 dishes.append(item.get('Name'))
     
-    dishes = sorted(set(dishes))
+    dishes = sorted(map(lambda x: x.lower(), set(dishes)))
 
     mk_rec(dishes, rows, 'Id', 'Name')
 
     return rows
 
 
-def find_id(rows, col, name):
+def find_id(rows, ind, name):
     for record in rows:
-        if record[col] == name:
-            return record['Id']
+        if record[ind] == name:
+            return record[0]
 
 
 def complexes():
@@ -75,15 +72,18 @@ def dishes_in_complex():
     rows = []
     id_ = 1
 
+    dsh = dishes()
+    cmpx = complexes()
+
     for r in range(0, len(root)):
         for comp in range(3):
             complex_name = root[r].find('Menu')[comp].attrib.get('Name')
 
             for item in root[r].find('Menu')[comp].findall('Dish'):
                 record = (id_, root[r].attrib.get('Date'),
-                          find_id(complexes(), 'Complex', complex_name),
-                          find_id(dishes(), 'Name', item.get('Name')))
-
+                          find_id(cmpx, 1, complex_name),
+                          find_id(dsh, 1, item.get('Name').lower()))
+                
                 rows.append(record)
                 id_ += 1
 
@@ -101,8 +101,8 @@ def employee_select():
         date = root[r].attrib.get('Date')
 
         for item in root[r].findall('Choice'):
-            record = (id_, date, find_id(emp, 'Employee', item.get('Employee')),
-                      find_id(cmpx, 'Complex', item.get('Variant')))
+            record = (id_, date, find_id(emp, 1, item.get('Employee')),
+                      find_id(cmpx, 1, item.get('Variant')))
 
             rows.append(record)
             id_ += 1
@@ -138,9 +138,6 @@ EMPLOYEES = employees()
 DISHES = dishes()
 COMPLEXES = complexes()
 
-""" Добавляю строку: 1 """
-#print(sorted(map(lambda x: x.lower(), ["Хлеб", "Чиввапчичи", "хлеб",  "азор"])))
-
 # These both are the ER of three previous tables
 
 DISHES_IN_COMPLEX = dishes_in_complex()
@@ -149,12 +146,16 @@ EMPLOYEE_SELECT = employee_select()
 
 # Main
 
-
 if __name__ == '__main__':
 
     #SQL queries to insert data into tables
+    insert(data=EMPLOYEES,
+           query="INSERT INTO employees(Id, Employee) VALUES(%s, %s)")
+
+    insert(data=DISHES,
+           query="INSERT INTO dishes(Id, Name) VALUES(%s, %s)")
     
-    insert(data=complexes(),
+    insert(data=COMPLEXES,
            query="INSERT INTO complexes(Id, Complex) VALUES(%s, %s)")
 
     insert(data=DISHES_IN_COMPLEX,
