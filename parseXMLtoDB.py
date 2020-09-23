@@ -42,7 +42,7 @@ def dishes():
             for item in root[r].find('Menu')[comp].findall('Dish'):
                 dishes.append(item.get('Name'))
     
-    dishes = sorted(map(lambda x: x.lower(), set(dishes)))
+    dishes = sorted(map(lambda x: x.capitalize(), set(dishes)))
 
     mk_rec(dishes, rows, 'Id', 'Name')
 
@@ -82,7 +82,7 @@ def dishes_in_complex():
             for item in root[r].find('Menu')[comp].findall('Dish'):
                 record = (id_, root[r].attrib.get('Date'),
                           find_id(cmpx, 1, complex_name),
-                          find_id(dsh, 1, item.get('Name').lower()))
+                          find_id(dsh, 1, item.get('Name').capitalize()))
                 
                 rows.append(record)
                 id_ += 1
