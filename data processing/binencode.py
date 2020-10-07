@@ -2,7 +2,11 @@ import pandas as pd
 
 def bin_encoding(dataframe, depths):
 
+    print('RUNNING...\n')
+
     cols = []
+
+    counter = 0
 
     for i,col in enumerate(dataframe.columns):
         for depth in range(depths[i]):
@@ -31,5 +35,8 @@ def bin_encoding(dataframe, depths):
                 row.append(val)
         
         new_df.loc[line] = row
+
+        counter += 1
+        print(counter)
 
     return new_df
