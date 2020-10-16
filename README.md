@@ -1,2 +1,3 @@
 # vector
-Machine learning project. The main task is to predict which food complex an employee will choose for a lunch.
+Machine learning project. Task: predict which main course will choose different
+employees for lunch at work, according to their past choices.
